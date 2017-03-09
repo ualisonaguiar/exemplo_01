@@ -1,22 +1,18 @@
 <?php
 
-function d($arrResult) {
-    echo '<pre>';
-    print_r($arrResult);
-    die;
-}
-
 class Exemplo
 {
     private $conexao;
 
-    public function registrarPontuacao($intIdUsuario, $arrPonto)
+    public function registrarPontuacao($intIdUsuario, $mixValor)
     {
-        # busque toda a pontuacao vinculado ao usuario
         $arrPontuacaoUsuario = $this->getPontuacaoUsuario($intIdUsuario);
+        $strCampo = $this->getCampoPontuacao($arrPontuacaoUsuario, $intIdUsuario);
         $arrDadosPontuacao = [
             'id_usuario' => $intIdUsuario,
-            'pontuacao' => $arrPonto,
+            'pontuacao' => [
+                $strCampo => $mixValor
+            ],
         ];
         if ($arrPontuacaoUsuario) {
             $arrDadosPontuacao['id_jogo'] = $arrPontuacaoUsuario['id_jogo'];
@@ -48,16 +44,57 @@ class Exemplo
         if (array_key_exists('id_jogo', $arrDadoPontuaco)) {
             $strQuery = 'update tb_usuario_pontuacao set ';
             foreach ($arrDadoPontuaco['pontuacao'] as $field => $strValue) {
-                $strQuery .= $field . " = '" .  $strValue . "', ";
+                $strQuery .= $field . " = '" . $strValue . "', ";
             }
             $strQuery = substr(trim($strQuery), 0, -1);
             $strQuery .= ' where id_jogo = ' . $arrDadoPontuaco['id_jogo'];
         } else {
             $arrKey = array_keys($arrDadoPontuaco['pontuacao']);
             $strQuery = 'insert into tb_usuario_pontuacao (id_usuario, ' . implode(', ', $arrKey) . ') values (';
-            $strQuery .= $arrDadoPontuaco['id_usuario'] . ", '" . implode("','" , array_values($arrDadoPontuaco['pontuacao'])) . "')";
+            $strQuery .= $arrDadoPontuaco['id_usuario'] . ", '" . implode("','", array_values($arrDadoPontuaco['pontuacao'])) . "')";
         }
         mysql_query($strQuery);
+    }
+
+    /**
+     * Retorna o campo que deverá ser inserido/atualizado
+     *
+     * @param $intIdUsuario
+     * @return array
+     */
+    protected function getCampoPontuacao($arrPontuacaoUsuario, $intIdUsuario)
+    {
+        $strPathIndice = realpath(__DIR__) . '/indice-' . $intIdUsuario . '.txt';
+        if (!$arrPontuacaoUsuario) {
+            return $this->inseriInformacaoArquivo($strPathIndice, 1);
+        }
+        # retorna ultimo campo nao preenchido no banco
+        if ($arrPontuacaoUsuario) {
+            unset($arrPontuacaoUsuario['id_jogo'], $arrPontuacaoUsuario['id_usuario']);
+            foreach ($arrPontuacaoUsuario as $strField => $strValue) {
+                if (!$strValue) {
+                    return $this->inseriInformacaoArquivo($strPathIndice, substr($strField, -2));
+                }
+            }
+        }
+        # retorna ultimo campo informado no arquivo
+        $strConteudo = intval(substr(file_get_contents($strPathIndice), -2));
+        $strValor = ($strConteudo == 10) ? 1 : ($strConteudo + 1);
+        return $this->inseriInformacaoArquivo($strPathIndice, $strValor);
+    }
+
+    protected function getInicarCampoDefault($strPathIndice)
+    {
+        $strCampoInicial = 'nu_ponto_' . str_pad(1, 2, 0, STR_PAD_LEFT);
+        file_put_contents($strPathIndice, $strCampoInicial);
+        return $strCampoInicial;
+    }
+
+    protected function inseriInformacaoArquivo($strPathIndice, $strCampoInicial)
+    {
+        $strCampoInicial = 'nu_ponto_' . str_pad($strCampoInicial, 2, 0, STR_PAD_LEFT);
+        file_put_contents($strPathIndice, $strCampoInicial);
+        return $strCampoInicial;
     }
 
     /**
