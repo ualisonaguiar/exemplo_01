@@ -64,7 +64,7 @@ class Exemplo
      */
     protected function getCampoPontuacao($arrPontuacaoUsuario, $intIdUsuario)
     {
-        $strPathIndice = realpath(__DIR__) . '/indice-' . $intIdUsuario . '.txt';
+        $strPathIndice = realpath(__DIR__) .PATH_SEPARATOR . 'indice-' . $intIdUsuario . '.txt';
         if (!$arrPontuacaoUsuario) {
             return $this->inseriInformacaoArquivo($strPathIndice, 1);
         }
