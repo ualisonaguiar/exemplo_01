@@ -35,7 +35,6 @@ class Exemplo
         $conexao = $this->getConexao();
         $strSQL = 'select * from tb_usuario_pontuacao where id_usuario = ' . $intIdUsuario;
         $resultSet = mysql_query($strSQL, $conexao);
-        $arrResultado = [];
         return mysql_fetch_assoc($resultSet);
     }
 

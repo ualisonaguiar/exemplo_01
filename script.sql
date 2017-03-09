@@ -1,6 +1,6 @@
 CREATE TABLE exemplo_01.tb_usuario_pontuacao
 (
-    id_usuario_pontuacao INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    id_jogo INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     id_usuario INT NOT NULL,
     nu_ponto_01 VARCHAR(100),
     nu_ponto_02 VARCHAR(100),
