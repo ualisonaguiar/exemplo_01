@@ -4,14 +4,15 @@ class Exemplo
 {
     private $conexao;
 
-    public function registrarPontuacao($intIdUsuario, $mixValor)
+    public function registrarPontuacao($intIdUsuario, $mixValor, $mixTempo)
     {
         $arrPontuacaoUsuario = $this->getPontuacaoUsuario($intIdUsuario);
         $strCampo = $this->getCampoPontuacao($arrPontuacaoUsuario, $intIdUsuario);
         $arrDadosPontuacao = [
             'id_usuario' => $intIdUsuario,
             'pontuacao' => [
-                $strCampo => $mixValor
+                $strCampo => $mixValor,
+                str_replace('nu_', 'tmp_', $strCampo) => $mixTempo
             ],
         ];
         if ($arrPontuacaoUsuario) {
@@ -64,8 +65,8 @@ class Exemplo
      */
     protected function getCampoPontuacao($arrPontuacaoUsuario, $intIdUsuario)
     {
-        $strPathIndice = realpath(__DIR__) .PATH_SEPARATOR . 'indice-' . $intIdUsuario . '.txt';
-        if (!$arrPontuacaoUsuario) {
+        $strPathIndice = realpath(__DIR__) . '\\indice-' . $intIdUsuario . '.txt';
+        if (!$arrPontuacaoUsuario || !is_file($strPathIndice)) {
             return $this->inseriInformacaoArquivo($strPathIndice, 1);
         }
         # retorna ultimo campo nao preenchido no banco
