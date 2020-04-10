@@ -1,0 +1,12 @@
+{
+    "name": "ualison/exemplo_01",
+    "authors": [
+        {
+            "name": "Ualison",
+            "email": "ualison.aguiar@gmail.com"
+        }
+    ],
+    "require": {
+        "phpmailer/phpmailer": "^6.1"
+    }
+}
