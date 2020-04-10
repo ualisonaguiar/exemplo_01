@@ -3,7 +3,7 @@ node {
 
     checkout scm
 
-    docker.image('bitnami/php-fpm:latest').inside("-e COMPOSER_HOME=/tmp/jenkins-workspace") {
+    docker.image('php:7.0-apache').inside("-e COMPOSER_HOME=/tmp/jenkins-workspace") {
 
       stage("Prepare folders") {
         sh "mkdir /tmp/jenkins-workspace"
